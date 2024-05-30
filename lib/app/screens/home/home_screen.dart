@@ -1,4 +1,5 @@
 import 'package:bus_admin_app/app/screens/home/pages/company_page.dart';
+import 'package:bus_admin_app/app/screens/home/pages/events_page.dart';
 import 'package:bus_admin_app/app/screens/home/pages/users_page.dart';
 import 'package:bus_admin_app/const/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedType = 0;
-  List pages = [CompanyPage(), UsersPage()];
+  List pages = [CompanyPage(), UsersPage(), EventsPage()];
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width / 5,
-                  ),
-                  Container(
                     padding: EdgeInsets.all(2),
                     decoration: BoxDecoration(
                         boxShadow: [
@@ -41,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15)),
-                    width: MediaQuery.of(context).size.width / 2.2,
+                    width: MediaQuery.of(context).size.width / 1.4,
                     height: 35,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -92,6 +90,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                   'Users',
                                   style: TextStyle(
                                     color: (selectedType == 1)
+                                        ? Colors.white
+                                        : Colors.grey[400],
+                                  ),
+                                ),
+                              )),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedType = 2;
+                            });
+                          },
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  color: (selectedType == 2)
+                                      ? AppColors.primary
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(15)),
+                              width:
+                                  MediaQuery.of(context).size.width / 2.3 / 2,
+                              height: 35,
+                              child: Center(
+                                child: Text(
+                                  'Events',
+                                  style: TextStyle(
+                                    color: (selectedType == 2)
                                         ? Colors.white
                                         : Colors.grey[400],
                                   ),
