@@ -393,7 +393,7 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
                                     ),
                                     GestureDetector(
                                         onTap: () {
-                                          routes.remove(index);
+                                          routes.removeAt(index);
                                           setState(() {});
                                         },
                                         child: Icon(

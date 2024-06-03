@@ -385,7 +385,7 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                                     ),
                                     GestureDetector(
                                         onTap: () {
-                                          routes.remove(index);
+                                          routes.removeAt(index);
                                           setState(() {});
                                         },
                                         child: Icon(

@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15)),
-                    width: MediaQuery.of(context).size.width / 1.4,
+                    width: MediaQuery.of(context).size.width / 1.5,
                     height: 35,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -56,8 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ? AppColors.primary
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(15)),
-                              width:
-                                  MediaQuery.of(context).size.width / 2.3 / 2,
+                              width: MediaQuery.of(context).size.width / 3 / 2,
                               height: 35,
                               child: Center(
                                 child: Text(
@@ -82,8 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ? AppColors.primary
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(15)),
-                              width:
-                                  MediaQuery.of(context).size.width / 2.3 / 2,
+                              width: MediaQuery.of(context).size.width / 3 / 2,
                               height: 35,
                               child: Center(
                                 child: Text(
@@ -108,14 +106,39 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ? AppColors.primary
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(15)),
-                              width:
-                                  MediaQuery.of(context).size.width / 2.3 / 2,
+                              width: MediaQuery.of(context).size.width / 3 / 2,
                               height: 35,
                               child: Center(
                                 child: Text(
                                   'Events',
                                   style: TextStyle(
                                     color: (selectedType == 2)
+                                        ? Colors.white
+                                        : Colors.grey[400],
+                                  ),
+                                ),
+                              )),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedType = 3;
+                            });
+                          },
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  color: (selectedType == 3)
+                                      ? AppColors.primary
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(15)),
+                              width:
+                                  MediaQuery.of(context).size.width / 3.2 / 2,
+                              height: 35,
+                              child: Center(
+                                child: Text(
+                                  'Messages',
+                                  style: TextStyle(
+                                    color: (selectedType == 3)
                                         ? Colors.white
                                         : Colors.grey[400],
                                   ),

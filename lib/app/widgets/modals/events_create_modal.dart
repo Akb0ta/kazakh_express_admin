@@ -126,7 +126,7 @@ class _EventCreateModalState extends State<EventCreateModal> {
                     city = data;
                     setState(() {});
                   },
-                  child: HomeSearchContainer(title: 'From', value: city),
+                  child: HomeSearchContainer(title: 'Location', value: city),
                 ),
                 SizedBox(
                   height: 10,
