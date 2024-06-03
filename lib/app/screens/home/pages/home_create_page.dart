@@ -1,15 +1,19 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'package:bus_admin_app/api/api_client.dart';
 import 'package:bus_admin_app/app/functions/global_function.dart';
 import 'package:bus_admin_app/app/screens/home/components/home_date_container.dart';
-import 'package:bus_admin_app/app/screens/home/components/home_search_card.dart';
 import 'package:bus_admin_app/app/screens/home/components/home_search_container.dart';
 import 'package:bus_admin_app/app/widgets/buttons/custom_button.dart';
 import 'package:bus_admin_app/app/widgets/custom_snackbar.dart';
 import 'package:bus_admin_app/app/widgets/modals/search_modal.dart';
 import 'package:bus_admin_app/app/widgets/textfields/custom_textfiled.dart';
 import 'package:bus_admin_app/const/app_colors.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:weekly_date_picker/weekly_date_picker.dart';
 import 'package:intl/intl.dart';
 
 class HomeCreateCompanyPage extends StatefulWidget {
@@ -27,10 +31,12 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
   String stopFinish = '';
   String fromValue = '';
   String toValue = '';
+  String driverImage = '';
   TimeOfDay selectedTime = TimeOfDay.now();
   var stopsData = [];
   var addedImages = [];
   var routes = [];
+  var documents = [];
   TextEditingController name = TextEditingController();
   TextEditingController bin = TextEditingController();
   TextEditingController mail = TextEditingController();
@@ -42,6 +48,7 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
   TextEditingController driverName = TextEditingController();
   TextEditingController driverSurname = TextEditingController();
   TextEditingController driverPhone = TextEditingController();
+  TextEditingController driverMail = TextEditingController();
   TextEditingController stopName = TextEditingController();
 
   TextEditingController startStation = TextEditingController();
@@ -54,6 +61,47 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
   TextEditingController price1 = TextEditingController();
   TextEditingController price2 = TextEditingController();
   TextEditingController price3 = TextEditingController();
+
+  File? _pickedFile;
+  Future<void> _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      String url = await uploadFileToBytescale(file);
+      documents.add(url);
+      setState(() {});
+    }
+  }
+
+  Future<String> uploadFileToBytescale(File file) async {
+    final String apiUrl =
+        'https://api.bytescale.com/v2/accounts/12a1yz2/uploads/binary'; // Replace with Bytescale API endpoint URL
+    final String apiKey =
+        'secret_12a1yz27gc7iFbGd1yFmqXFMn2bs'; // Replace with your Bytescale API key
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'Content-Type: text/plain',
+          'Authorization': 'Bearer $apiKey',
+        },
+        body: await file.readAsBytes(),
+      );
+      log(response.body);
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, return the URL of the uploaded file
+        return jsonDecode(response.body)['url'];
+      } else {
+        // If the server returns an error response, throw an exception
+        throw Exception('Failed to upload file: ${response.statusCode}');
+      }
+    } catch (e) {
+      // If an error occurs during the request, throw an exception
+      throw Exception('Failed to upload file: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -305,6 +353,7 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                               return Container(
                                 alignment: Alignment.topLeft,
                                 width: 250,
+                                margin: EdgeInsets.only(top: 15),
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
@@ -803,6 +852,47 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                     SizedBox(
                       height: 15,
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            String image = await GlobalFunctions()
+                                .uploadImageToImgBB(context);
+                            if (image != 'null') {
+                              driverImage = image;
+                              setState(() {});
+                            } else {
+                              CustomSnackBar.show(
+                                  context, 'Error picking image', false);
+                            }
+                          },
+                          child: Container(
+                              alignment: Alignment.topLeft,
+                              width: MediaQuery.of(context).size.width / 5,
+                              height: MediaQuery.of(context).size.height / 3.5,
+                              decoration: BoxDecoration(
+                                  image: (driverImage != '')
+                                      ? DecorationImage(
+                                          image: NetworkImage(driverImage))
+                                      : null,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: AppColors.primary)),
+                              child: (driverImage == '')
+                                  ? Center(
+                                      child: Icon(
+                                        Icons.add_a_photo,
+                                        color: Colors.black,
+                                        size: 100,
+                                      ),
+                                    )
+                                  : null),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
                     CustomTextField(
                         hintText: 'Driver name', controller: driverName),
                     SizedBox(
@@ -818,6 +908,11 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                     SizedBox(
                       height: 10,
                     ),
+                    CustomTextField(
+                        hintText: 'Driver mail', controller: driverMail),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -828,18 +923,68 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                       height: 10,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Icon(
-                          Icons.add_to_drive,
-                          size: 60,
-                          color: AppColors.primary,
-                        ),
-                      ],
-                    ),
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: (documents.length == 0)
+                            ? [
+                                InkWell(
+                                  onTap: () async {
+                                    await _pickFile();
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.add_to_drive,
+                                        size: 60,
+                                        color: AppColors.primary,
+                                      ),
+                                      Text('Add document')
+                                    ],
+                                  ),
+                                )
+                              ]
+                            : documents.map((e) {
+                                int index = documents.indexOf(e);
+                                return (index - 1 != documents.length)
+                                    ? Column(
+                                        children: [
+                                          Icon(
+                                            Icons.add_to_drive,
+                                            size: 60,
+                                            color: AppColors.primary,
+                                          ),
+                                          Text(index.toString())
+                                        ],
+                                      )
+                                    : Row(
+                                        children: [
+                                          Column(
+                                            children: [
+                                              Icon(
+                                                Icons.add_to_drive,
+                                                size: 60,
+                                                color: AppColors.primary,
+                                              ),
+                                              Text(index.toString())
+                                            ],
+                                          ),
+                                          InkWell(
+                                            onTap: () async {
+                                              await _pickFile();
+                                            },
+                                            child: Column(
+                                              children: [
+                                                Icon(
+                                                  Icons.add_to_drive,
+                                                  size: 60,
+                                                  color: AppColors.primary,
+                                                ),
+                                                Text('Add document')
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                              }).toList()),
                     SizedBox(
                       height: 20,
                     ),
@@ -857,9 +1002,11 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                             'kbe': kbe.text,
                             'images': addedImages,
                             'driver': {
+                              'image': driverImage,
+                              'mail': driverMail,
                               'name': driverName.text,
                               'surname': driverSurname.text,
-                              'phone': driverPhone.text
+                              'phone': driverPhone.text,
                             }
                           };
                           String createdCompanyId = await ApiClient()

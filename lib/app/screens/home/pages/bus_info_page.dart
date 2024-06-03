@@ -1,5 +1,6 @@
 import 'package:bus_admin_app/app/screens/home/components/bus_route_card.dart';
 import 'package:bus_admin_app/app/screens/home/pages/bus_stop_card.dart';
+import 'package:bus_admin_app/app/widgets/custom_snackbar.dart';
 import 'package:bus_admin_app/const/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
@@ -341,10 +342,18 @@ class _BusInfoPageState extends State<BusInfoPage> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Icon(
-                                  Icons.document_scanner,
-                                  size: 45,
-                                  color: AppColors.primary,
+                                InkWell(
+                                  onTap: () {
+                                    CustomSnackBar.show(
+                                        context,
+                                        'User document url:  https://pdfobject.com/pdf/sample.pdf',
+                                        true);
+                                  },
+                                  child: Icon(
+                                    Icons.document_scanner,
+                                    size: 45,
+                                    color: AppColors.primary,
+                                  ),
                                 ),
                                 SizedBox(
                                   height: 5,

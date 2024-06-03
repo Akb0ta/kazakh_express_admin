@@ -28,6 +28,8 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
   String stopFinish = '';
   String fromValue = '';
   String toValue = '';
+  String driverImage = '';
+
   TimeOfDay selectedTime = TimeOfDay.now();
   var stopsData = [];
   var addedImages = [];
@@ -43,6 +45,8 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
   TextEditingController driverName = TextEditingController();
   TextEditingController driverSurname = TextEditingController();
   TextEditingController driverPhone = TextEditingController();
+  TextEditingController driverMail = TextEditingController();
+
   TextEditingController stopName = TextEditingController();
 
   TextEditingController startStation = TextEditingController();
@@ -74,7 +78,8 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
     driverSurname.text = widget.data['driver']['surname'] ?? '';
     driverPhone.text = widget.data['driver']['phone'] ?? '';
     // stopName.text = widget.data['stopName'] ?? '';
-
+    driverImage = widget.data['driver']['image'] ?? '';
+    driverMail.text = widget.data['driver']['mail'] ?? '';
     startStation.text = widget.data['startStation'] ?? '';
     finishStation.text = widget.data['finishStation'] ?? '';
     startTimeController.text = widget.data['startTime'] ?? '';
@@ -854,6 +859,47 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
                     SizedBox(
                       height: 15,
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            String image = await GlobalFunctions()
+                                .uploadImageToImgBB(context);
+                            if (image != 'null') {
+                              driverImage = image;
+                              setState(() {});
+                            } else {
+                              CustomSnackBar.show(
+                                  context, 'Error picking image', false);
+                            }
+                          },
+                          child: Container(
+                              alignment: Alignment.topLeft,
+                              width: MediaQuery.of(context).size.width / 5,
+                              height: MediaQuery.of(context).size.height / 3.5,
+                              decoration: BoxDecoration(
+                                  image: (driverImage != '')
+                                      ? DecorationImage(
+                                          image: NetworkImage(driverImage))
+                                      : null,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: AppColors.primary)),
+                              child: (driverImage == '')
+                                  ? Center(
+                                      child: Icon(
+                                        Icons.add_a_photo,
+                                        color: Colors.black,
+                                        size: 100,
+                                      ),
+                                    )
+                                  : null),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
                     CustomTextField(
                         hintText: 'Driver name', controller: driverName),
                     SizedBox(
@@ -869,28 +915,34 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
                     SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text('Driver document '),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Icon(
-                          Icons.add_to_drive,
-                          size: 60,
-                          color: AppColors.primary,
-                        ),
-                      ],
-                    ),
+                    CustomTextField(
+                        hintText: 'Driver mail', controller: driverMail),
+
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // // Row(
+                    // //   mainAxisAlignment: MainAxisAlignment.start,
+                    // //   children: [
+                    // //     Text('Driver document '),
+                    // //   ],
+                    // // ),
+                    // // SizedBox(
+                    // //   height: 10,
+                    // // ),
+                    // // Row(
+                    // //   mainAxisAlignment: MainAxisAlignment.start,
+                    // //   children: [
+                    // //     SizedBox(
+                    // //       width: 20,
+                    // //     ),
+                    // //     Icon(
+                    // //       Icons.add_to_drive,
+                    // //       size: 60,
+                    // //       color: AppColors.primary,
+                    //     ),
+                    //   ],
+                    // ),
                     SizedBox(
                       height: 20,
                     ),

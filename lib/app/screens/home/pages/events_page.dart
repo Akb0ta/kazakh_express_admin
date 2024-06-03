@@ -58,7 +58,10 @@ class EventsPage extends StatelessWidget {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator(); // Display a loading indicator while waiting for data
+                  return SizedBox(
+                      width: 50,
+                      child:
+                          CircularProgressIndicator()); // Display a loading indicator while waiting for data
                 }
                 if (snapshot.hasError) {
                   return Text(

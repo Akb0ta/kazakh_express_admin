@@ -20,7 +20,7 @@ void main() async {
   ));
 
   await LocalData.instance.initDatas();
-  String userId = prefs.getString('userId') ?? '';
+  String userId = prefs.getString('id') ?? '';
   bool isLogged = false;
   if (userId != '') {
     isLogged = true;

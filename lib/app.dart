@@ -27,7 +27,7 @@ class BusApp extends StatelessWidget {
           dividerColor: AppColors.primaryColor,
         ),
         home: MediaQuery(
-          child: (isLogged) ? HomeScreen() : HomeScreen(),
+          child: (isLogged) ? HomeScreen() : LoginScreen(),
           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
         ),
       ),

@@ -72,4 +72,17 @@ class ApiClient {
     }
     return userId;
   }
+
+  Future<String> login(String log, String pass) async {
+    String userId = '';
+    QuerySnapshot snapshot = await _firestore
+        .collection('admins')
+        .where('phone', isEqualTo: log)
+        .where('password', isEqualTo: pass)
+        .get();
+    if (snapshot.docs.isNotEmpty) {
+      userId = snapshot.docs[0].id;
+    }
+    return userId;
+  }
 }

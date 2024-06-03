@@ -7,6 +7,7 @@ import 'package:bus_admin_app/app/widgets/modals/search_modal.dart';
 import 'package:bus_admin_app/app/widgets/textfields/custom_textfiled.dart';
 import 'package:bus_admin_app/const/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class EventCreateModal extends StatefulWidget {
   const EventCreateModal({super.key});
@@ -20,10 +21,25 @@ class _EventCreateModalState extends State<EventCreateModal> {
   TextEditingController date = TextEditingController();
   TextEditingController description = TextEditingController();
   TextEditingController location = TextEditingController();
-
   TextEditingController price = TextEditingController();
   String image = '';
   String city = '';
+  String selectedDate = '';
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2025),
+    );
+
+    if (picked != null) {
+      setState(() {
+        selectedDate = DateFormat('dd/MM/yyyy').format(picked);
+        date.text = selectedDate;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +59,7 @@ class _EventCreateModalState extends State<EventCreateModal> {
                   onTap: () async {
                     String im =
                         await GlobalFunctions().uploadImageToImgBB(context);
-                    if (image != 'null') {
+                    if (im != 'null') {
                       setState(() {
                         image = im;
                       });
@@ -79,7 +95,16 @@ class _EventCreateModalState extends State<EventCreateModal> {
                 SizedBox(
                   height: 10,
                 ),
-                CustomTextField(hintText: 'Date', controller: date),
+                InkWell(
+                  onTap: () async {
+                    await _selectDate(context);
+                  },
+                  child: CustomTextField(
+                    hintText: 'DD/MM/YYYY',
+                    isEnabled: false,
+                    controller: date,
+                  ),
+                ),
                 SizedBox(
                   height: 10,
                 ),
