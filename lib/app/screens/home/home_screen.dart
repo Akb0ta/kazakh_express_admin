@@ -1,5 +1,6 @@
 import 'package:bus_admin_app/app/screens/home/pages/company_page.dart';
 import 'package:bus_admin_app/app/screens/home/pages/events_page.dart';
+import 'package:bus_admin_app/app/screens/home/pages/messages_page.dart';
 import 'package:bus_admin_app/app/screens/home/pages/users_page.dart';
 import 'package:bus_admin_app/const/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedType = 0;
-  List pages = [CompanyPage(), UsersPage(), EventsPage()];
+  List pages = [CompanyPage(), UsersPage(), EventsPage(), MessagesPage()];
 
   @override
   Widget build(BuildContext context) {

@@ -34,6 +34,7 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
   var stopsData = [];
   var addedImages = [];
   var routes = [];
+  var documents = [];
   TextEditingController name = TextEditingController();
   TextEditingController bin = TextEditingController();
   TextEditingController mail = TextEditingController();
@@ -80,6 +81,7 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
     // stopName.text = widget.data['stopName'] ?? '';
     driverImage = widget.data['driver']['image'] ?? '';
     driverMail.text = widget.data['driver']['mail'] ?? '';
+    documents = widget.data['driver']['documents'] ?? [];
     startStation.text = widget.data['startStation'] ?? '';
     finishStation.text = widget.data['finishStation'] ?? '';
     startTimeController.text = widget.data['startTime'] ?? '';
@@ -917,37 +919,107 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
                     ),
                     CustomTextField(
                         hintText: 'Driver mail', controller: driverMail),
-
-                    // SizedBox(
-                    //   height: 10,
-                    // ),
-                    // // Row(
-                    // //   mainAxisAlignment: MainAxisAlignment.start,
-                    // //   children: [
-                    // //     Text('Driver document '),
-                    // //   ],
-                    // // ),
-                    // // SizedBox(
-                    // //   height: 10,
-                    // // ),
-                    // // Row(
-                    // //   mainAxisAlignment: MainAxisAlignment.start,
-                    // //   children: [
-                    // //     SizedBox(
-                    // //       width: 20,
-                    // //     ),
-                    // //     Icon(
-                    // //       Icons.add_to_drive,
-                    // //       size: 60,
-                    // //       color: AppColors.primary,
-                    //     ),
-                    //   ],
-                    // ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: (documents.length == 0)
+                            ? [
+                                InkWell(
+                                  onTap: () async {
+                                    String image = await GlobalFunctions()
+                                        .uploadImageToImgBB(context);
+                                    if (image != 'null') {
+                                      documents.add(image);
+                                      setState(() {});
+                                    } else {
+                                      CustomSnackBar.show(context,
+                                          'Error picking image', false);
+                                    }
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.add_to_drive,
+                                        size: 60,
+                                        color: AppColors.primary,
+                                      ),
+                                      Text('Add document')
+                                    ],
+                                  ),
+                                )
+                              ]
+                            : documents.map((e) {
+                                int index = documents.indexOf(e);
+                                return (index != documents.length - 1)
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            Image.network(
+                                              documents[index],
+                                              width: 60,
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text('Document ' +
+                                                (index + 1).toString())
+                                          ],
+                                        ),
+                                      )
+                                    : Row(
+                                        children: [
+                                          InkWell(
+                                            onTap: () {},
+                                            child: Column(
+                                              children: [
+                                                Image.network(
+                                                  documents[index],
+                                                  width: 60,
+                                                ),
+                                                SizedBox(height: 5),
+                                                Text('Document ' +
+                                                    (index + 1).toString())
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(width: 5),
+                                          InkWell(
+                                            onTap: () async {
+                                              String image =
+                                                  await GlobalFunctions()
+                                                      .uploadImageToImgBB(
+                                                          context);
+                                              if (image != 'null') {
+                                                documents.add(image);
+                                                setState(() {});
+                                              } else {
+                                                CustomSnackBar.show(
+                                                    context,
+                                                    'Error picking image',
+                                                    false);
+                                              }
+                                            },
+                                            child: Column(
+                                              children: [
+                                                Icon(
+                                                  Icons.add_to_drive,
+                                                  size: 60,
+                                                  color: AppColors.primary,
+                                                ),
+                                                Text('Add document')
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                              }).toList()),
                     SizedBox(
                       height: 20,
                     ),
                     CustomButton(
-                      text: 'Create company',
+                      text: 'Update',
                       function: () async {
                         try {
                           var data = {
@@ -960,12 +1032,15 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
                             'kbe': kbe.text,
                             'images': addedImages,
                             'driver': {
+                              'image': driverImage,
+                              'mail': driverMail.text,
                               'name': driverName.text,
                               'surname': driverSurname.text,
-                              'phone': driverPhone.text
+                              'phone': driverPhone.text,
+                              'documents': documents
                             }
                           };
-                          List<Map<String, dynamic>> routeDataList = [];
+                          List routeDataIds = [];
                           for (var route in routes) {
                             Map<String, dynamic> routeData = {
                               'aPoint': route['aPoint'],
@@ -981,10 +1056,16 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
                               'stops': route['stops'],
                               'seats': route['seats']
                             };
-                            routeDataList.add(routeData);
+                            if (route.containsKey('routeID')) {
+                              routeDataIds.add(route['routeID']);
+                            } else {
+                              String createdRouteId = await ApiClient()
+                                  .globalCreate('routes', routeData, 'routeID');
+                              routeDataIds.add(createdRouteId);
+                            }
                           }
 
-                          data['routes'] = routeDataList;
+                          data['routes'] = routeDataIds;
                           await ApiClient().update(
                               'companies', widget.data['companyID'], data);
                           CustomSnackBar.show(context, 'Updated!', true);

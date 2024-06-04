@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await Firebase.initializeApp(
-      // Replace with actual values
       options: FirebaseOptions(
     apiKey: 'AIzaSyC90-AQR_V6T_bNvPaRrVFpAtjzYJAXTm0',
     appId: '1:789310177341:web:8781f595eb142083a3aa54',

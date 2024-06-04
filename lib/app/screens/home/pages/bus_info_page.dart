@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:bus_admin_app/app/screens/home/components/bus_route_card.dart';
 import 'package:bus_admin_app/app/screens/home/pages/bus_stop_card.dart';
 import 'package:bus_admin_app/app/widgets/custom_snackbar.dart';
 import 'package:bus_admin_app/const/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart'; // Import Firestore package
 
 class BusInfoPage extends StatefulWidget {
   final Map<String, dynamic>
@@ -41,6 +44,7 @@ class _BusInfoPageState extends State<BusInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    log(widget.companyData['driver']['documents'].toString());
     return Scaffold(
       backgroundColor: AppColors.kPrimaryWhite,
       body: SingleChildScrollView(
@@ -298,7 +302,9 @@ class _BusInfoPageState extends State<BusInfoPage> {
                                     child: SizedBox.fromSize(
                                       size: Size.fromRadius(24), // Image radius
                                       child: Image.network(
-                                          widget.companyData['driver']['image'],
+                                          widget.companyData['driver']
+                                                  ['image'] ??
+                                              '',
                                           fit: BoxFit.cover),
                                     ),
                                   ),
@@ -312,12 +318,14 @@ class _BusInfoPageState extends State<BusInfoPage> {
                                 height: 10,
                               ),
                               Text('Phone: ' +
-                                  widget.companyData['driver']['phone']),
+                                      widget.companyData['driver']['phone'] ??
+                                  'Не указан'),
                               SizedBox(
                                 height: 10,
                               ),
                               Text('Email: ' +
-                                  widget.companyData['driver']['mail']),
+                                      widget.companyData['driver']['mail'] ??
+                                  'Не указан'),
                             ],
                           ),
                         ),
@@ -342,23 +350,44 @@ class _BusInfoPageState extends State<BusInfoPage> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    CustomSnackBar.show(
-                                        context,
-                                        'User document url:  https://pdfobject.com/pdf/sample.pdf',
-                                        true);
-                                  },
-                                  child: Icon(
-                                    Icons.document_scanner,
-                                    size: 45,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text('USER DOCUMENT')
+                                Column(
+                                  children: widget.companyData['driver']
+                                          ['documents']
+                                      .map<Widget>((e) {
+                                    int index = widget.companyData['driver']
+                                            ['documents']
+                                        .indexOf(e);
+                                    return InkWell(
+                                      onTap: () {
+                                        try {
+                                          launch(e);
+                                        } catch (e) {
+                                          CustomSnackBar.show(context,
+                                              'Please try later...', false);
+                                        }
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.document_scanner,
+                                                color: AppColors.primary,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text('Document ' +
+                                                  (index + 1).toString())
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                )
                               ],
                             )),
                       ],

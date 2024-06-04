@@ -62,47 +62,6 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
   TextEditingController price2 = TextEditingController();
   TextEditingController price3 = TextEditingController();
 
-  File? _pickedFile;
-  Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      File file = File(result.files.single.path!);
-      String url = await uploadFileToBytescale(file);
-      documents.add(url);
-      setState(() {});
-    }
-  }
-
-  Future<String> uploadFileToBytescale(File file) async {
-    final String apiUrl =
-        'https://api.bytescale.com/v2/accounts/12a1yz2/uploads/binary'; // Replace with Bytescale API endpoint URL
-    final String apiKey =
-        'secret_12a1yz27gc7iFbGd1yFmqXFMn2bs'; // Replace with your Bytescale API key
-
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'Content-Type: text/plain',
-          'Authorization': 'Bearer $apiKey',
-        },
-        body: await file.readAsBytes(),
-      );
-      log(response.body);
-
-      if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, return the URL of the uploaded file
-        return jsonDecode(response.body)['url'];
-      } else {
-        // If the server returns an error response, throw an exception
-        throw Exception('Failed to upload file: ${response.statusCode}');
-      }
-    } catch (e) {
-      // If an error occurs during the request, throw an exception
-      throw Exception('Failed to upload file: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -928,7 +887,15 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                             ? [
                                 InkWell(
                                   onTap: () async {
-                                    await _pickFile();
+                                    String image = await GlobalFunctions()
+                                        .uploadImageToImgBB(context);
+                                    if (image != 'null') {
+                                      documents.add(image);
+                                      setState(() {});
+                                    } else {
+                                      CustomSnackBar.show(context,
+                                          'Error picking image', false);
+                                    }
                                   },
                                   child: Column(
                                     children: [
@@ -944,32 +911,54 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                               ]
                             : documents.map((e) {
                                 int index = documents.indexOf(e);
-                                return (index - 1 != documents.length)
-                                    ? Column(
-                                        children: [
-                                          Icon(
-                                            Icons.add_to_drive,
-                                            size: 60,
-                                            color: AppColors.primary,
-                                          ),
-                                          Text(index.toString())
-                                        ],
+                                return (index != documents.length - 1)
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            Image.network(
+                                              documents[index],
+                                              width: 60,
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text('Document ' +
+                                                (index + 1).toString())
+                                          ],
+                                        ),
                                       )
                                     : Row(
                                         children: [
-                                          Column(
-                                            children: [
-                                              Icon(
-                                                Icons.add_to_drive,
-                                                size: 60,
-                                                color: AppColors.primary,
-                                              ),
-                                              Text(index.toString())
-                                            ],
+                                          InkWell(
+                                            onTap: () {},
+                                            child: Column(
+                                              children: [
+                                                Image.network(
+                                                  documents[index],
+                                                  width: 60,
+                                                ),
+                                                SizedBox(height: 5),
+                                                Text('Document ' +
+                                                    (index + 1).toString())
+                                              ],
+                                            ),
                                           ),
+                                          SizedBox(width: 5),
                                           InkWell(
                                             onTap: () async {
-                                              await _pickFile();
+                                              String image =
+                                                  await GlobalFunctions()
+                                                      .uploadImageToImgBB(
+                                                          context);
+                                              if (image != 'null') {
+                                                documents.add(image);
+                                                setState(() {});
+                                              } else {
+                                                CustomSnackBar.show(
+                                                    context,
+                                                    'Error picking image',
+                                                    false);
+                                              }
                                             },
                                             child: Column(
                                               children: [
@@ -1003,10 +992,11 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                             'images': addedImages,
                             'driver': {
                               'image': driverImage,
-                              'mail': driverMail,
+                              'mail': driverMail.text,
                               'name': driverName.text,
                               'surname': driverSurname.text,
                               'phone': driverPhone.text,
+                              'documents': documents
                             }
                           };
                           String createdCompanyId = await ApiClient()

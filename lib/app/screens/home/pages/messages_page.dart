@@ -32,7 +32,7 @@ class MessagesPage extends StatelessWidget {
           ),
           StreamBuilder<QuerySnapshot>(
             stream:
-                FirebaseFirestore.instance.collection('companies').snapshots(),
+                FirebaseFirestore.instance.collection('callbacks').snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
@@ -51,38 +51,11 @@ class MessagesPage extends StatelessWidget {
                 Map<String, dynamic> data =
                     document.data() as Map<String, dynamic>;
 
-                // Create a DataRow for each document
-                DataRow row = DataRow(
-                    onSelectChanged: (val) {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => BusInfoPage(
-                      //             companyData: data,
-                      //           )),
-                      // );
-                    },
-                    cells: [
-                      DataCell(Text(data['name'])),
-                      DataCell(Text(data['email'])),
-                      DataCell(Text(data['message'])),
-                      DataCell(Row(
-                        children: [
-                          InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomeEditCompanyPage(
-                                            data: data,
-                                          )),
-                                );
-                              },
-                              child: Icon(Icons.edit_note_rounded)),
-                          SizedBox(width: 15),
-                        ],
-                      )),
-                    ]);
+                DataRow row = DataRow(cells: [
+                  DataCell(Text(data['name'])),
+                  DataCell(Text(data['email'])),
+                  DataCell(Text(data['message'])),
+                ]);
 
                 // Add the DataRow to the list of rows
                 rows.add(row);

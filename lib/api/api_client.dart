@@ -23,7 +23,6 @@ class ApiClient {
 
   Future<String> globalCreate(
       String collection, Map<String, dynamic> data, String id) async {
-    // Add a new document with the provided data
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection(collection).add(data);
 
