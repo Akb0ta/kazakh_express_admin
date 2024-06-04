@@ -35,6 +35,7 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
   var addedImages = [];
   var routes = [];
   var documents = [];
+  var drivers = [];
   TextEditingController name = TextEditingController();
   TextEditingController bin = TextEditingController();
   TextEditingController mail = TextEditingController();
@@ -75,13 +76,14 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
     phone.text = widget.data['phone'] ?? '';
     address.text = widget.data['address'] ?? '';
     kbe.text = widget.data['kbe'] != null ? widget.data['kbe'].toString() : '';
-    driverName.text = widget.data['driver']['name'] ?? '';
-    driverSurname.text = widget.data['driver']['surname'] ?? '';
-    driverPhone.text = widget.data['driver']['phone'] ?? '';
+    // driverName.text = widget.data['driver']['name'] ?? '';
+    // driverSurname.text = widget.data['driver']['surname'] ?? '';
+    // driverPhone.text = widget.data['driver']['phone'] ?? '';
+    drivers = widget.data['drivers'];
     // stopName.text = widget.data['stopName'] ?? '';
-    driverImage = widget.data['driver']['image'] ?? '';
-    driverMail.text = widget.data['driver']['mail'] ?? '';
-    documents = widget.data['driver']['documents'] ?? [];
+    // driverImage = widget.data['driver']['image'] ?? '';
+    // driverMail.text = widget.data['driver']['mail'] ?? '';
+    // documents = widget.data['driver']['documents'] ?? [];
     startStation.text = widget.data['startStation'] ?? '';
     finishStation.text = widget.data['finishStation'] ?? '';
     startTimeController.text = widget.data['startTime'] ?? '';
@@ -848,6 +850,73 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
                     SizedBox(
                       height: 15,
                     ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    (drivers.length != 0)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Drivers',
+                                style: TextStyle(
+                                    fontSize: 18, color: AppColors.primary),
+                              ),
+                            ],
+                          )
+                        : SizedBox(),
+                    Column(
+                      children: drivers.map((e) {
+                        int index = drivers.indexOf(e);
+                        return Container(
+                          alignment: Alignment.topLeft,
+                          width: 250,
+                          margin: EdgeInsets.only(top: 15),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(blurRadius: 5, color: Colors.grey)
+                            ],
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.supervised_user_circle,
+                                    color: AppColors.primary,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    e['name'] + ' ' + e['surname'],
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500),
+                                  )
+                                ],
+                              ),
+                              GestureDetector(
+                                  onTap: () {
+                                    drivers.removeAt(index);
+                                    setState(() {});
+                                  },
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ))
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -1031,14 +1100,7 @@ class _HomeEditCompanyPageState extends State<HomeEditCompanyPage> {
                             'address': address.text,
                             'kbe': kbe.text,
                             'images': addedImages,
-                            'driver': {
-                              'image': driverImage,
-                              'mail': driverMail.text,
-                              'name': driverName.text,
-                              'surname': driverSurname.text,
-                              'phone': driverPhone.text,
-                              'documents': documents
-                            }
+                            'drivers': drivers,
                           };
                           List routeDataIds = [];
                           for (var route in routes) {

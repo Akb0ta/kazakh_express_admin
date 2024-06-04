@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class BusApp extends StatelessWidget {
   final bool isLogged;
   const BusApp({super.key, required this.isLogged});
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(

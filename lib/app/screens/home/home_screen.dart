@@ -1,9 +1,11 @@
+import 'package:bus_admin_app/app.dart';
 import 'package:bus_admin_app/app/screens/home/pages/company_page.dart';
 import 'package:bus_admin_app/app/screens/home/pages/events_page.dart';
 import 'package:bus_admin_app/app/screens/home/pages/messages_page.dart';
 import 'package:bus_admin_app/app/screens/home/pages/users_page.dart';
 import 'package:bus_admin_app/const/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -159,7 +161,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       'assets/images/login_image.png',
                       width: MediaQuery.of(context).size.width / 5.5,
                     )),
-                  )
+                  ),
+                  InkWell(
+                      onTap: () async {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        await prefs.clear();
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => BusApp(
+                                      isLogged: false,
+                                    )),
+                            ModalRoute.withName('/'));
+                      },
+                      child: Icon(Icons.exit_to_app,
+                          color: Colors.white, size: 45))
                 ],
               ),
             ),

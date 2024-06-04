@@ -37,6 +37,7 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
   var addedImages = [];
   var routes = [];
   var documents = [];
+  var drivers = [];
   TextEditingController name = TextEditingController();
   TextEditingController bin = TextEditingController();
   TextEditingController mail = TextEditingController();
@@ -798,6 +799,70 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                     SizedBox(
                       height: 15,
                     ),
+                    (drivers.length != 0)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Drivers',
+                                style: TextStyle(
+                                    fontSize: 18, color: AppColors.primary),
+                              ),
+                            ],
+                          )
+                        : SizedBox(),
+                    Column(
+                      children: drivers.map((e) {
+                        int index = drivers.indexOf(e);
+                        return Container(
+                          alignment: Alignment.topLeft,
+                          width: 250,
+                          margin: EdgeInsets.only(top: 15),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(blurRadius: 5, color: Colors.grey)
+                            ],
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.supervised_user_circle,
+                                    color: AppColors.primary,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    e['name'] + ' ' + e['surname'],
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500),
+                                  )
+                                ],
+                              ),
+                              GestureDetector(
+                                  onTap: () {
+                                    drivers.removeAt(index);
+                                    setState(() {});
+                                  },
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ))
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -975,6 +1040,37 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                                       );
                               }).toList()),
                     SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: 200,
+                          child: CustomButton(
+                            function: () {
+                              drivers.add({
+                                'image': driverImage,
+                                'mail': driverMail.text,
+                                'name': driverName.text,
+                                'surname': driverSurname.text,
+                                'phone': driverPhone.text,
+                                'documents': documents
+                              });
+                              driverImage = '';
+                              driverMail.text = '';
+                              driverName.text = '';
+                              driverSurname.text = '';
+                              driverPhone.text = '';
+                              documents = [];
+                              setState(() {});
+                            },
+                            text: 'Add driver',
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
                       height: 20,
                     ),
                     CustomButton(
@@ -990,14 +1086,7 @@ class _HomeCreateCompanyPageState extends State<HomeCreateCompanyPage> {
                             'address': address.text,
                             'kbe': kbe.text,
                             'images': addedImages,
-                            'driver': {
-                              'image': driverImage,
-                              'mail': driverMail.text,
-                              'name': driverName.text,
-                              'surname': driverSurname.text,
-                              'phone': driverPhone.text,
-                              'documents': documents
-                            }
+                            'drivers': drivers,
                           };
                           String createdCompanyId = await ApiClient()
                               .globalCreate('companies', data, 'companyID');

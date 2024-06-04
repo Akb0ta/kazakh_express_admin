@@ -50,45 +50,53 @@ class EventsPage extends StatelessWidget {
           SizedBox(
             height: 20,
           ),
-          Container(
-            width: MediaQuery.of(context).size.width / 3,
-            child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('events').snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SizedBox(
-                      width: 50,
-                      child:
-                          CircularProgressIndicator()); // Display a loading indicator while waiting for data
-                }
-                if (snapshot.hasError) {
-                  return Text(
-                      'Error: ${snapshot.error}'); // Display an error message if there's an error
-                }
-                if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                  // Iterate through the documents in the snapshot and build your UI
-                  return ListView(
-                    padding: EdgeInsets.only(top: 10),
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data() as Map<String, dynamic>;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: EventsTrendingCard(data: data),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width / 3,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('events')
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return SizedBox(
+                          width: 50,
+                          child:
+                              CircularProgressIndicator()); // Display a loading indicator while waiting for data
+                    }
+                    if (snapshot.hasError) {
+                      return Text(
+                          'Error: ${snapshot.error}'); // Display an error message if there's an error
+                    }
+                    if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                      // Iterate through the documents in the snapshot and build your UI
+                      return Center(
+                        child: ListView(
+                          padding: EdgeInsets.only(top: 10),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          children: snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            Map<String, dynamic> data =
+                                document.data() as Map<String, dynamic>;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: EventsTrendingCard(data: data),
+                            );
+                          }).toList(),
+                        ),
                       );
-                    }).toList(),
-                  );
-                } else {
-                  return Text(
-                      'No data'); // Handle case where there are no documents in the collection
-                }
-              },
-            ),
+                    } else {
+                      return Text(
+                          'No data'); // Handle case where there are no documents in the collection
+                    }
+                  },
+                ),
+              ),
+            ],
           )
         ],
       ),

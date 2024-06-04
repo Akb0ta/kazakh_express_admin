@@ -44,7 +44,6 @@ class _BusInfoPageState extends State<BusInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    log(widget.companyData['driver']['documents'].toString());
     return Scaffold(
       backgroundColor: AppColors.kPrimaryWhite,
       body: SingleChildScrollView(
@@ -302,7 +301,7 @@ class _BusInfoPageState extends State<BusInfoPage> {
                                     child: SizedBox.fromSize(
                                       size: Size.fromRadius(24), // Image radius
                                       child: Image.network(
-                                          widget.companyData['driver']
+                                          widget.companyData['drivers'][0]
                                                   ['image'] ??
                                               '',
                                           fit: BoxFit.cover),
@@ -311,20 +310,22 @@ class _BusInfoPageState extends State<BusInfoPage> {
                                   SizedBox(
                                     width: 15,
                                   ),
-                                  Text(widget.companyData['driver']['name'])
+                                  Text(widget.companyData['drivers'][0]['name'])
                                 ],
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text('Phone: ' +
-                                      widget.companyData['driver']['phone'] ??
+                                      widget.companyData['drivers'][0]
+                                          ['phone'] ??
                                   'Не указан'),
                               SizedBox(
                                 height: 10,
                               ),
                               Text('Email: ' +
-                                      widget.companyData['driver']['mail'] ??
+                                      widget.companyData['drivers'][0]
+                                          ['mail'] ??
                                   'Не указан'),
                             ],
                           ),
@@ -351,10 +352,10 @@ class _BusInfoPageState extends State<BusInfoPage> {
                                   height: 10,
                                 ),
                                 Column(
-                                  children: widget.companyData['driver']
+                                  children: widget.companyData['drivers'][0]
                                           ['documents']
                                       .map<Widget>((e) {
-                                    int index = widget.companyData['driver']
+                                    int index = widget.companyData['drivers'][0]
                                             ['documents']
                                         .indexOf(e);
                                     return InkWell(
